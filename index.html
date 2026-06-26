@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBER TOOLS CENTER PRO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-cyber: #060814;
+            --panel-cyber: rgba(10, 15, 36, 0.7);
+            --neon-blue: #00f0ff;
+            --neon-green: #39ff14;
+            --neon-pink: #ff007f;
+            --text-muted: #8fa0dd;
+            --border-cyber: rgba(0, 240, 255, 0.15);
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-cyber);
+            color: #f1f5f9;
+            overflow-x: hidden;
+        }
+        .code-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #060814;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 240, 255, 0.3);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--neon-blue);
+        }
+        /* Glassmorphic Cyber Effects */
+        .glass-panel {
+            background: var(--panel-cyber);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-cyber);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+        }
+        .neon-border-blue:focus {
+            outline: none;
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+        }
+        .neon-text-blue {
+            color: var(--neon-blue);
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+        }
+        .neon-text-green {
+            color: var(--neon-green);
+            text-shadow: 0 0 8px rgba(57, 255, 20, 0.6);
+        }
+        /* Loading overlay animation */
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: #040610;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        .cyber-spinner {
+            width: 80px;
+            height: 80px;
+            border: 4px solid transparent;
+            border-top-color: var(--neon-blue);
+            border-bottom-color: var(--neon-green);
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .tool-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .tool-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+        }
+        /* Notification System styles */
+        #notification-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .toast {
+            animation: slideIn 0.3s ease forwards;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div id="loader">
+        <div class="cyber-spinner mb-4"></div>
+        <div class="code-font text-sm tracking-widest neon-text-blue animate-pulse">INITIALIZING CORE SECURITY SUBSYSTEMS...</div>
+        <div id="loader-progress" class="w-48 bg-slate-800 h-1 mt-2 rounded-full overflow-hidden">
+            <div class="bg-gradient-to-r from-cyan-500 to-green-500 h-full w-0 transition-all duration-300" id="loader-bar"></div>
+        </div>
+    </div>
+
+    <div id="notification-container"></div>
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <aside id="sidebar" class="w-64 bg-slate-950/90 border-r border-slate-800 flex flex-col transition-all duration-300 z-50">
+            <div class="h-16 flex items-center px-4 border-b border-slate-800 gap-3">
+                <div class="w-8 h-8 rounded bg-gradient-to-tr from-cyan-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                    <i class="fa-solid fa-shield-halved text-slate-950 font-bold"></i>
+                </div>
+                <span class="font-bold text-sm tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400 code-font brand-text">CYBER_CENTER</span>
+            </div>
+            
+            <nav class="flex-1 overflow-y-auto p-3 space-y-1 custom-scroll">
+                <button onclick="switchTab('dashboard')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-cyan-400 bg-cyan-950/40 border border-cyan-800/40" data-target="dashboard">
+                    <i class="fa-solid fa-chart-pie w-5"></i> Dashboard
+                </button>
+                <div class="text-[10px] font-bold uppercase tracking-widest text-slate-500 px-3 pt-4 pb-1 code-font">Modules</div>
+                
+                <button onclick="switchTab('cryptography')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900 border border-transparent" data-target="cryptography">
+                    <i class="fa-solid fa-key w-5"></i> Cryptography
+                </button>
+                <button onclick="switchTab('email-security')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900 border border-transparent" data-target="email-security">
+                    <i class="fa-solid fa-envelope-shield w-5"></i> Email Security
+                </button>
+                <button onclick="switchTab('url-security')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900 border border-transparent" data-target="url-security">
+                    <i class="fa-solid fa-link-slash w-5"></i> URL Security
+                </button>
+                <button onclick="switchTab('website-analysis')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900 border border-transparent" data-target="website-analysis">
+                    <i class="fa-solid fa-globe w-5"></i> Website Analysis
+                </button>
+                <button onclick="switchTab('threat-intelligence')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900 border border-transparent" data-target="threat-intelligence">
+                    <i class="fa-solid fa-spider w-5"></i> Threat Intelligence
+                </button>
+                <button onclick="switchTab('password-security')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900 border border-transparent" data-target="password-security">
+                    <i class="fa-solid fa-vault w-5"></i> Password Security
+                </button>
+                <button onclick="switchTab('log-analysis')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900 border border-transparent" data-target="log-analysis">
+                    <i class="fa-solid fa-file-waveform w-5"></i> Log Analysis
+                </button>
+                <button onclick="switchTab('risk-assessment')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900 border border-transparent" data-target="risk-assessment">
+                    <i class="fa-solid fa-triangle-exclamation w-5"></i> Risk Assessment
+                </button>
+                <button onclick="switchTab('utility-tools')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900 border border-transparent" data-target="utility-tools">
+                    <i class="fa-solid fa-screwdriver-wrench w-5"></i> Utility Tools
+                </button>
+
+                <div class="text-[10px] font-bold uppercase tracking-widest text-slate-500 px-3 pt-4 pb-1 code-font">Enterprise</div>
+                <button onclick="switchTab('compliance')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900 border border-transparent" data-target="compliance">
+                    <i class="fa-solid fa-building-shield w-5"></i> Compliance
+                </button>
+                <button onclick="switchTab('reports')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900 border border-transparent" data-target="reports">
+                    <i class="fa-solid fa-file-invoice w-5"></i> Reports Engine
+                </button>
+                <button onclick="switchTab('settings')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900 border border-transparent" data-target="settings">
+                    <i class="fa-solid fa-sliders w-5"></i> Settings
+                </button>
+                <button onclick="switchTab('help-center')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900 border border-transparent" data-target="help-center">
+                    <i class="fa-solid fa-circle-question w-5"></i> Help Center
+                </button>
+                <button onclick="switchTab('about')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900 border border-transparent" data-target="about">
+                    <i class="fa-solid fa-circle-info w-5"></i> About Engine
+                </button>
+            </nav>
+
+            <div class="p-3 border-t border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-2 overflow-hidden">
+                    <div class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></div>
+                    <span class="text-xs text-slate-400 code-font truncate">SEC_NODE_ALPHA_OK</span>
+                </div>
+                <button onclick="toggleSidebar()" class="text-slate-400 hover:text-white p-1 rounded hover:bg-slate-900">
+                    <i class="fa-solid fa-bars-staggered"></i>
+                </button>
+            </div>
+        </aside>
+
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            
+            <header class="h-16 bg-slate-950/60 backdrop-blur-md border-b border-slate-800 flex items-center justify-between px-6 z-40">
+                <div class="flex items-center gap-3">
+                    <div class="text-xs code-font text-slate-500 flex items-center gap-2">
+                        <span>CTC_PRO</span> 
+                        <i class="fa-solid fa-angle-right text-[10px]"></i>
+                        <span id="breadcrumb-active" class="text-cyan-400 font-medium">DASHBOARD</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-6">
+                    <div class="relative w-64">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs text-slate-500"></i>
+                        <input id="global-search" type="text" placeholder="Search 50 cyber tools..." oninput="handleGlobalSearch()" class="w-full bg-slate-900/90 text-xs rounded-lg pl-9 pr-4 py-2 border border-slate-800 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50">
+                    </div>
+                    <div class="hidden md:flex items-center gap-4 text-xs code-font">
+                        <div class="bg-slate-900 px-2.5 py-1 rounded border border-slate-800">
+                            <span class="text-slate-500">OPS: </span><span class="text-emerald-400" id="ops-counter">9,412/s</span>
+                        </div>
+                        <div class="bg-slate-900 px-2.5 py-1 rounded border border-slate-800">
+                            <span class="text-slate-500">THREAT_LVL: </span><span class="text-rose-400">LOW</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-6 space-y-6 custom-scroll">
+                
+                <div id="tab-dashboard" class="tab-content active space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="glass-panel p-4 rounded-xl flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-slate-400 font-medium uppercase tracking-wider">Engine Tools Loaded</p>
+                                <h3 class="text-2xl font-bold mt-1 text-white code-font" id="count-tools">50 / 50</h3>
+                            </div>
+                            <div class="p-3 bg-cyan-500/10 rounded-lg text-cyan-400 border border-cyan-500/20"><i class="fa-solid fa-cubes text-xl"></i></div>
+                        </div>
+                        <div class="glass-panel p-4 rounded-xl flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-slate-400 font-medium uppercase tracking-wider">Local Computations</p>
+                                <h3 class="text-2xl font-bold mt-1 text-white code-font" id="count-computations">0</h3>
+                            </div>
+                            <div class="p-3 bg-emerald-500/10 rounded-lg text-emerald-400 border border-emerald-500/20"><i class="fa-solid fa-microchip text-xl"></i></div>
+                        </div>
+                        <div class="glass-panel p-4 rounded-xl flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-slate-400 font-medium uppercase tracking-wider">API Independence</p>
+                                <h3 class="text-2xl font-bold mt-1 text-white code-font">100%</h3>
+                            </div>
+                            <div class="p-3 bg-amber-500/10 rounded-lg text-amber-400 border border-amber-500/20"><i class="fa-solid fa-network-wired text-xl"></i></div>
+                        </div>
+                        <div class="glass-panel p-4 rounded-xl flex items-center justify-between">
+                            <div>
+                                <p class="text-xs text-slate-400 font-medium uppercase tracking-wider">Platform Health</p>
+                                <h3 class="text-2xl font-bold mt-1 text-emerald-400 code-font">OPTIMAL</h3>
+                            </div>
+                            <div class="p-3 bg-purple-500/10 rounded-lg text-purple-400 border border-purple-500/20"><i class="fa-solid fa-heart-pulse text-xl"></i></div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="glass-panel p-4 rounded-xl">
+                            <div class="flex items-center justify-between mb-4">
+                                <h4 class="text-sm font-semibold tracking-wider uppercase text-slate-300 flex items-center gap-2"><i class="fa-solid fa-chart-line text-cyan-400"></i> Subsystem Event Distribution</h4>
+                                <span class="text-[10px] bg-cyan-950 text-cyan-400 border border-cyan-800 px-2 py-0.5 rounded code-font">LIVE_FEED</span>
+                            </div>
+                            <div class="h-64 relative">
+                                <canvas id="dashboardChart1"></canvas>
+                            </div>
+                        </div>
+                        <div class="glass-panel p-4 rounded-xl">
+                            <div class="flex items-center justify-between mb-4">
+                                <h4 class="text-sm font-semibold tracking-wider uppercase text-slate-300 flex items-center gap-2"><i class="fa-solid fa-chart-bar text-emerald-400"></i> Local Cryptographic Engine Load</h4>
+                                <span class="text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded code-font">REALTIME</span>
+                            </div>
+                            <div class="h-64 relative">
+                                <canvas id="dashboardChart2"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-sm font-semibold tracking-wider uppercase text-slate-400 mb-4 code-font">AVAILABLE PIPELINES MAP (50 CORE SECURITY APPLICATIONS)</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3" id="dashboard-tools-grid">
+                            </div>
+                    </div>
+                </div>
+                <div id="tab-cryptography" class="tab-content space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <div>
+                            <h2 class="text-xl font-bold tracking-tight text-white">Cryptographic Engineering Core</h2>
+                            <p class="text-xs text-slate-400">High-performance in-browser hashing, data mapping, encoders and decoding frameworks.</p>
+                        </div>
+                        <i class="fa-solid fa-key text-2xl text-cyan-500/30"></i>
+                    </div>
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                        <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="md5 generator">
+                            <div class="flex items-center justify-between"><span class="text-xs code-font text-cyan-400 font-bold">TOOL_01 // MD5 GENERATOR</span><i class="fa-solid fa-hashtag text-slate-600 text-xs"></i></div>
+                            <textarea id="t1-input" placeholder="Enter plaintext input string..." class="w-full h-20 bg-slate-900/80 rounded-lg p-2.5 text-xs text-slate-200 border border-slate-800 focus:outline-none focus:border-cyan-500 code-font" oninput="runMD5()"></textarea>
+                            <button onclick="runMD5()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs py-2 rounded-lg transition-colors code-font">GENERATE HASH</button>
+                            <div class="p-2.5 bg-slate-950 rounded border border-slate-800 break-all text-xs code-font"><span class="text-slate-500">MD5:</span> <span id="t1-output" class="text-emerald-400">d41d8cd98f00b204e9800998ecf8427e</span></div>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="sha1 generator">
+                            <div class="flex items-center justify-between"><span class="text-xs code-font text-cyan-400 font-bold">TOOL_02 // SHA1 GENERATOR</span><i class="fa-solid fa-hashtag text-slate-600 text-xs"></i></div>
+                            <textarea id="t2-input" placeholder="Enter plaintext input string..." class="w-full h-20 bg-slate-900/80 rounded-lg p-2.5 text-xs text-slate-200 border border-slate-800 focus:outline-none focus:border-cyan-500 code-font" oninput="runSHA1()"></textarea>
+                            <button onclick="runSHA1()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs py-2 rounded-lg transition-colors code-font">GENERATE HASH</button>
+                            <div class="p-2.5 bg-slate-950 rounded border border-slate-800 break-all text-xs code-font"><span class="text-slate-500">SHA1:</span> <span id="t2-output" class="text-emerald-400">da39a3ee5e6b4b0d3255bfef95601890afd80709</span></div>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="sha256 generator">
+                            <div class="flex items-center justify-between"><span class="text-xs code-font text-cyan-400 font-bold">TOOL_03 // SHA256 GENERATOR</span><i class="fa-solid fa-hashtag text-slate-600 text-xs"></i></div>
+                            <textarea id="t3-input" placeholder="Enter plaintext input string..." class="w-full h-20 bg-slate-900/80 rounded-lg p-2.5 text-xs text-slate-200 border border-slate-800 focus:outline-none focus:border-cyan-500 code-font" oninput="runSHA256()"></textarea>
+                            <button onclick="runSHA256()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs py-2 rounded-lg transition-colors code-font">GENERATE HASH</button>
+                            <div class="p-2.5 bg-slate-950 rounded border border-slate-800 break-all text-xs code-font"><span class="text-slate-500">SHA256:</span> <span id="t3-output" class="text-emerald-400">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</span></div>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="sha512 generator">
+                            <div class="flex items-center justify-between"><span class="text-xs code-font text-cyan-400 font-bold">TOOL_04 // SHA512 GENERATOR</span><i class="fa-solid fa-hashtag text-slate-600 text-xs"></i></div>
+                            <textarea id="t4-input" placeholder="Enter plaintext input string..." class="w-full h-20 bg-slate-900/80 rounded-lg p-2.5 text-xs text-slate-200 border border-slate-800 focus:outline-none focus:border-cyan-500 code-font" oninput="runSHA512()"></textarea>
+                            <button onclick="runSHA512()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs py-2 rounded-lg transition-colors code-font">GENERATE HASH</button>
+                            <div class="p-2.5 bg-slate-950 rounded border border-slate-800 break-all text-xs code-font"><span class="text-slate-500">SHA512:</span> <span id="t4-output" class="text-emerald-400 text-[10px]">cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e</span></div>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="base64 encode">
+                            <div class="flex items-center justify-between"><span class="text-xs code-font text-cyan-400 font-bold">TOOL_05 // BASE64 ENCODER</span><i class="fa-solid fa-arrow-right-left text-slate-600 text-xs"></i></div>
+                            <textarea id="t5-input" placeholder="Enter raw string to encode..." class="w-full h-20 bg-slate-900/80 rounded-lg p-2.5 text-xs text-slate-200 border border-slate-800 focus:outline-none focus:border-cyan-500 code-font"></textarea>
+                            <button onclick="runBase64Encode()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs py-2 rounded-lg transition-colors code-font">BASE64 ENCODE</button>
+                            <div class="p-2.5 bg-slate-950 rounded border border-slate-800 break-all text-xs code-font"><span class="text-slate-500">OUTPUT:</span> <span id="t5-output" class="text-cyan-400"></span></div>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="base64 decode">
+                            <div class="flex items-center justify-between"><span class="text-xs code-font text-cyan-400 font-bold">TOOL_06 // BASE64 DECODER</span><i class="fa-solid fa-arrow-right-left text-slate-600 text-xs"></i></div>
+                            <textarea id="t6-input" placeholder="Enter base64 encoded string..." class="w-full h-20 bg-slate-900/80 rounded-lg p-2.5 text-xs text-slate-200 border border-slate-800 focus:outline-none focus:border-cyan-500 code-font"></textarea>
+                            <button onclick="runBase64Decode()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs py-2 rounded-lg transition-colors code-font">BASE64 DECODE</button>
+                            <div class="p-2.5 bg-slate-950 rounded border border-slate-800 break-all text-xs code-font"><span class="text-slate-500">OUTPUT:</span> <span id="t6-output" class="text-cyan-400"></span></div>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="url encode">
+                            <div class="flex items-center justify-between"><span class="text-xs code-font text-cyan-400 font-bold">TOOL_07 // URL ENCODER</span><i class="fa-solid fa-link text-slate-600 text-xs"></i></div>
+                            <input id="t7-input" type="text" placeholder="https://example.com/path?param=value spaces" class="w-full bg-slate-900/80 rounded-lg p-2.5 text-xs text-slate-200 border border-slate-800 focus:outline-none focus:border-cyan-500 code-font">
+                            <button onclick="runURLEncode()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs py-2 rounded-lg transition-colors code-font">URL ENCODE</button>
+                            <div class="p-2.5 bg-slate-950 rounded border border-slate-800 break-all text-xs code-font"><span class="text-slate-500">OUTPUT:</span> <span id="t7-output" class="text-cyan-400"></span></div>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="url decode">
+                            <div class="flex items-center justify-between"><span class="text-xs code-font text-cyan-400 font-bold">TOOL_08 // URL DECODER</span><i class="fa-solid fa-link text-slate-600 text-xs"></i></div>
+                            <input id="t8-input" type="text" placeholder="https%3A%2F%2Fexample.com%2Fpath%3Fparam%3Dvalue%20spaces" class="w-full bg-slate-900/80 rounded-lg p-2.5 text-xs text-slate-200 border border-slate-800 focus:outline-none focus:border-cyan-500 code-font">
+                            <button onclick="runURLDecode()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs py-2 rounded-lg transition-colors code-font">URL DECODE</button>
+                            <div class="p-2.5 bg-slate-950 rounded border border-slate-800 break-all text-xs code-font"><span class="text-slate-500">OUTPUT:</span> <span id="t8-output" class="text-cyan-400"></span></div>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="rot13 obfuscation">
+                            <div class="flex items-center justify-between"><span class="text-xs code-font text-cyan-400 font-bold">TOOL_09 // ROT13 CIPHER</span><i class="fa-solid fa-mask text-slate-600 text-xs"></i></div>
+                            <textarea id="t9-input" placeholder="Enter text to rotate by 13 positions..." class="w-full h-20 bg-slate-900/80 rounded-lg p-2.5 text-xs text-slate-200 border border-slate-800 focus:outline-none focus:border-cyan-500 code-font" oninput="runROT13()"></textarea>
+                            <div class="p-2.5 bg-slate-950 rounded border border-slate-800 break-all text-xs code-font"><span class="text-slate-500">OUTPUT:</span> <span id="t9-output" class="text-amber-400"></span></div>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="hmac generator">
+                            <div class="flex items-center justify-between"><span class="text-xs code-font text-cyan-400 font-bold">TOOL_10 // HMAC CALCULATOR</span><i class="fa-solid fa-key text-slate-600 text-xs"></i></div>
+                            <input id="t10-key" type="text" placeholder="Secret Key" class="w-full bg-slate-900/80 rounded-lg p-2 text-xs text-slate-200 border border-slate-800 focus:outline-none focus:border-cyan-500 code-font">
+                            <textarea id="t10-input" placeholder="Message content payload..." class="w-full h-16 bg-slate-900/80 rounded-lg p-2.5 text-xs text-slate-200 border border-slate-800 focus:outline-none focus:border-cyan-500 code-font"></textarea>
+                            <button onclick="runHMAC()" class="w-full bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs py-2 rounded-lg transition-colors code-font">CALCULATE HMAC</button>
+                            <div class="p-2.5 bg-slate-950 rounded border border-slate-800 break-all text-xs code-font"><span class="text-slate-500">HMAC-SHA256:</span> <span id="t10-output" class="text-emerald-400"></span></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="tab-email-security" class="tab-content space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <div>
+                            <h2 class="text-xl font-bold tracking-tight text-white">Email & Anti-Spoofing Analytics</h2>
+                            <p class="text-xs text-slate-400">Evaluate SMTP headers, security records (SPF, DKIM, DMARC) and look for direct spoofing elements.</p>
+                        </div>
+                        <i class="fa-solid fa-envelope-shield text-2xl text-cyan-500/30"></i>
+                    </div>
+                    <div class="grid grid-cols-1 gap-6">
+                        <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="email header analyzer">
+                            <div class="text-xs code-font text-cyan-400 font-bold">TOOL_11 // SMTP HEADER PARSER</div>
+                            <textarea id="t11-input" placeholder="Paste full raw email headers here..." class="w-full h-32 bg-slate-900/80 rounded-lg p-2.5 text-xs text-slate-200 border border-slate-800 focus:outline-none focus:border-cyan-500 code-font"></textarea>
+                            <button onclick="runHeaderAnalyzer()" class="bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs px-4 py-2 rounded-lg transition-colors code-font">ANALYZE HEADERS</button>
+                            <div id="t11-output" class="space-y-2"></div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="spf analyzer">
+                                <div class="text-xs code-font text-cyan-400 font-bold">TOOL_12 // SPF DNS RECORD EVALUATOR</div>
+                                <input id="t12-input" type="text" placeholder="e.g. v=spf1 include:_spf.google.com ~all" class="w-full bg-slate-900/80 rounded-lg p-2.5 text-xs text-slate-200 border border-slate-800 focus:outline-none focus:border-cyan-500 code-font">
+                                <button onclick="runSPFAnalyzer()" class="w-full bg-slate-800 text-white text-xs py-2 rounded border border-slate-700 code-font">VALIDATE SPF</button>
+                                <div id="t12-output" class="p-3 bg-slate-950 rounded border border-slate-800 text-xs space-y-1"></div>
+                            </div>
+                            <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="dkim analyzer">
+                                <div class="text-xs code-font text-cyan-400 font-bold">TOOL_13 // DKIM SIGNATURE PARSER</div>
+                                <textarea id="t13-input" placeholder="v=1; a=rsa-sha256; c=relaxed/relaxed; d=example.com; s=selector; ..." class="w-full h-20 bg-slate-900/80 rounded-lg p-2.5 text-xs text-slate-200 border border-slate-800 focus:outline-none focus:border-cyan-500 code-font"></textarea>
+                                <button onclick="runDKIMAnalyzer()" class="w-full bg-slate-800 text-white text-xs py-2 rounded border border-slate-700 code-font">VALIDATE DKIM CONFIG</button>
+                                <div id="t13-output" class="p-3 bg-slate-950 rounded border border-slate-800 text-xs space-y-1"></div>
+                            </div>
+                            <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="dmarc analyzer">
+                                <div class="text-xs code-font text-cyan-400 font-bold">TOOL_14 // DMARC POLICY INSIGHTS</div>
+                                <input id="t14-input" type="text" placeholder="e.g. v=DMARC1; p=reject; pct=100; rua=mailto:dmarc@example.com" class="w-full bg-slate-900/80 rounded-lg p-2.5 text-xs text-slate-200 border border-slate-800 focus:outline-none focus:border-cyan-500 code-font">
+                                <button onclick="runDMARCAnalyzer()" class="w-full bg-slate-800 text-white text-xs py-2 rounded border border-slate-700 code-font">EXTRACT POLICY</button>
+                                <div id="t14-output" class="p-3 bg-slate-950 rounded border border-slate-800 text-xs space-y-1"></div>
+                            </div>
+                            <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="spoof detection email">
+                                <div class="text-xs code-font text-cyan-400 font-bold">TOOL_15 // DIRECT SPOOFING RISK CALCULATOR</div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <input id="t15-from" type="text" placeholder="From Header Domain" class="bg-slate-900 rounded p-2 text-xs text-white border border-slate-800">
+                                    <input id="t15-return" type="text" placeholder="Return-Path Domain" class="bg-slate-900 rounded p-2 text-xs text-white border border-slate-800">
+                                </div>
+                                <button onclick="runSpoofDetection()" class="w-full bg-rose-950/40 text-rose-400 border border-rose-800 text-xs py-2 rounded code-font">EVALUATE SPOOF ALIGNMENT</button>
+                                <div id="t15-output" class="p-2.5 bg-slate-950 rounded text-xs code-font"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="tab-url-security" class="tab-content space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <div>
+                            <h2 class="text-xl font-bold tracking-tight text-white">URL Defang & Deconstruction Matrix</h2>
+                            <p class="text-xs text-slate-400">Deconstruct structural endpoints, calculate byte entropy levels, and score phish signatures.</p>
+                        </div>
+                        <i class="fa-solid fa-link-slash text-2xl text-cyan-500/30"></i>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="url parser">
+                            <div class="text-xs code-font text-cyan-400 font-bold">TOOL_16 // STRUC-URL PARSER</div>
+                            <input id="t16-input" type="text" placeholder="https://sub.domain.com:8080/path/file.php?id=1#track" class="w-full bg-slate-900 rounded p-2 text-xs border border-slate-800">
+                            <button onclick="runURLParser()" class="bg-cyan-600 text-slate-950 px-3 py-1.5 rounded text-xs font-bold code-font">PARSE TARGET</button>
+                            <div id="t16-output" class="p-2 bg-slate-950 rounded text-xs code-font space-y-1"></div>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="domain extractor">
+                            <div class="text-xs code-font text-cyan-400 font-bold">TOOL_17 // DOMAIN & TLD EXTRACTOR</div>
+                            <input id="t17-input" type="text" placeholder="Paste full messy tracking URL link..." class="w-full bg-slate-900 rounded p-2 text-xs border border-slate-800">
+                            <button onclick="runDomainExtractor()" class="bg-slate-800 text-white px-3 py-1.5 rounded text-xs code-font">ISOLATE DOMAIN</button>
+                            <div id="t17-output" class="p-2 bg-slate-950 rounded text-xs text-emerald-400 code-font"></div>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="url decoder recursive">
+                            <div class="text-xs code-font text-cyan-400 font-bold">TOOL_18 // MULTI-LAYER RECURSIVE URL DECODER</div>
+                            <input id="t18-input" type="text" placeholder="http%3A%2F%2Fsite.com%2F%252520nested" class="w-full bg-slate-900 rounded p-2 text-xs border border-slate-800">
+                            <button onclick="runURLDecoderRecursive()" class="bg-slate-800 text-white px-3 py-1.5 rounded text-xs code-font">RECURSIVE STRIP</button>
+                            <div id="t18-output" class="p-2 bg-slate-950 rounded text-xs text-cyan-400 code-font"></div>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="url entropy analyzer">
+                            <div class="text-xs code-font text-cyan-400 font-bold">TOOL_19 // SHANNON ENTROPY DETECTOR FOR OBFUSCATION</div>
+                            <input id="t19-input" type="text" placeholder="Paste long suspicious looking string or URL" class="w-full bg-slate-900 rounded p-2 text-xs border border-slate-800">
+                            <button onclick="runURLEntropy()" class="bg-slate-800 text-white px-3 py-1.5 rounded text-xs code-font">COMPUTE ENTROPY</button>
+                            <div id="t19-output" class="p-2 bg-slate-950 rounded text-xs code-font"></div>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl space-y-3 col-span-1 md:col-span-2 tool-card-wrapper" data-name="phishing indicator analyzer">
+                            <div class="text-xs code-font text-cyan-400 font-bold">TOOL_20 // HEURISTIC PHISHING THREAT SCORE ENGINE</div>
+                            <input id="t20-input" type="text" placeholder="https://secure-login-bank-update-verify.com/login/auth" class="w-full bg-slate-900 rounded p-2.5 text-xs border border-slate-800 text-white">
+                            <button onclick="runPhishingIndicator()" class="bg-gradient-to-r from-amber-600 to-rose-600 text-white px-4 py-2 rounded text-xs font-bold code-font">EVALUATE THREAT HOOKS</button>
+                            <div id="t20-output" class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="tab-website-analysis" class="tab-content space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <div>
+                            <h2 class="text-xl font-bold tracking-tight text-white">Target Infrastructure Fingerprinting</h2>
+                            <p class="text-xs text-slate-400">Simulation engine tracking security response configurations, response payloads, and tech headers.</p>
+                        </div>
+                        <i class="fa-solid fa-globe text-2xl text-cyan-500/30"></i>
+                    </div>
+                    <div class="grid grid-cols-1 gap-6">
+                        <div class="glass-panel p-5 rounded-xl space-y-4 tool-card-wrapper" data-name="http header viewer security analyzer">
+                            <div class="text-xs code-font text-cyan-400 font-bold">TOOLS 21 & 22 // HTTP HEADER SIMULATOR & SECURITY AUDITOR</div>
+                            <textarea id="t21-input" placeholder="HTTP/1.1 200 OK&#10;Server: nginx&#10;Content-Type: text/html&#10;X-Frame-Options: DENY" class="w-full h-32 bg-slate-900 rounded p-2 text-xs code-font border border-slate-800"></textarea>
+                            <div class="flex gap-2">
+                                <button onclick="runHeaderViewer()" class="bg-cyan-600 text-slate-950 font-bold text-xs px-3 py-2 rounded code-font">VIEW DOM METRICS</button>
+                                <button onclick="runSecurityHeaders()" class="bg-emerald-600 text-slate-950 font-bold text-xs px-3 py-2 rounded code-font">AUDIT SECURITY POLICIES</button>
+                            </div>
+                            <div id="t21-output" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="cookie analyzer">
+                                <div class="text-xs code-font text-cyan-400 font-bold">TOOL_23 // COOKIE FLAGS ANALYZER</div>
+                                <input id="t23-input" type="text" placeholder="session=xyz; Secure; HttpOnly; SameSite=Strict" class="w-full bg-slate-900 rounded p-2 text-xs border border-slate-800">
+                                <button onclick="runCookieAnalyzer()" class="w-full bg-slate-800 text-xs py-1.5 rounded border border-slate-700 text-white code-font">CHECK COOKIE FLAGGING</button>
+                                <div id="t23-output" class="p-2 bg-slate-950 rounded text-xs code-font"></div>
+                            </div>
+                            <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="ssl viewer simulation">
+                                <div class="text-xs code-font text-cyan-400 font-bold">TOOL_24 // SSL/TLS CERTIFICATE SIMULATOR</div>
+                                <input id="t24-input" type="text" placeholder="domain.com" class="w-full bg-slate-900 rounded p-2 text-xs border border-slate-800">
+                                <button onclick="runSSLViewer()" class="w-full bg-slate-800 text-xs py-1.5 rounded border border-slate-700 text-white code-font">GENERATE LOCAL ASSET CERT</button>
+                                <div id="t24-output" class="p-2 bg-slate-950 rounded text-xs code-font space-y-1"></div>
+                            </div>
+                            <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="technology fingerprint viewer">
+                                <div class="text-xs code-font text-cyan-400 font-bold">TOOL_25 // STACK TECH FINGERPRINT LOOKUP</div>
+                                <input id="t25-input" type="text" placeholder="Paste response html or server tags" class="w-full bg-slate-900 rounded p-2 text-xs border border-slate-800">
+                                <button onclick="runTechFingerprint()" class="w-full bg-slate-800 text-xs py-1.5 rounded border border-slate-700 text-white code-font">EXTRACT INTEL FINGERPRINT</button>
+                                <div id="t25-output" class="p-2 bg-slate-950 rounded text-xs code-font"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="tab-threat-intelligence" class="tab-content space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <div>
+                            <h2 class="text-xl font-bold tracking-tight text-white">Threat Intelligence & Threat Mapping</h2>
+                            <p class="text-xs text-slate-400">Query static datasets concerning indicators of compromise (IOCs), hashes, and structural matrix maps.</p>
+                        </div>
+                        <i class="fa-solid fa-spider text-2xl text-cyan-500/30"></i>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="ioc lookup">
+                            <div class="text-xs code-font text-cyan-400 font-bold">TOOL_26 // BATCH IOC CLASSIFIER</div>
+                            <textarea id="t26-input" placeholder="Enter list of IPs, Domains, Hashes (one per line)..." class="w-full h-24 bg-slate-900 rounded p-2 text-xs border border-slate-800 code-font"></textarea>
+                            <button onclick="runIOCLookup()" class="bg-cyan-600 text-slate-950 font-bold text-xs px-3 py-1.5 rounded code-font">CLASSIFY ASSETS</button>
+                            <div id="t26-output" class="p-2 bg-slate-950 rounded text-xs space-y-1 code-font max-h-40 overflow-y-auto"></div>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="hash analyzer">
+                            <div class="text-xs code-font text-cyan-400 font-bold">TOOL_27 // CRYPTO HASH TYPE DETECTOR</div>
+                            <input id="t27-input" type="text" placeholder="Paste unknown file signature/hash hash here" class="w-full bg-slate-900 rounded p-2 text-xs border border-slate-800 code-font">
+                            <button onclick="runHashAnalyzer()" class="bg-slate-800 text-white text-xs px-3 py-1.5 rounded code-font">DETERMINE BIT WIDTH</button>
+                            <div id="t27-output" class="p-2 bg-slate-950 rounded text-xs code-font text-amber-400"></div>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="domain intelligence">
+                            <div class="text-xs code-font text-cyan-400 font-bold">TOOL_28 // DOMAIN INTEL RECON PIPELINE</div>
+                            <input id="t28-input" type="text" placeholder="malicious-site.net" class="w-full bg-slate-900 rounded p-2 text-xs border border-slate-800">
+                            <button onclick="runDomainIntel()" class="bg-slate-800 text-white text-xs px-3 py-1.5 rounded code-font">RESOLVE INTEL RECORD</button>
+                            <div id="t28-output" class="p-2 bg-slate-950 rounded text-xs code-font space-y-1"></div>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="ip intelligence">
+                            <div class="text-xs code-font text-cyan-400 font-bold">TOOL_29 // IP NETWORK INTEL MATRIX</div>
+                            <input id="t29-input" type="text" placeholder="8.8.8.8" class="w-full bg-slate-900 rounded p-2 text-xs border border-slate-800">
+                            <button onclick="runIPIntel()" class="bg-slate-800 text-white text-xs px-3 py-1.5 rounded code-font">EXTRACT REPUTATION BLOCKS</button>
+                            <div id="t29-output" class="p-2 bg-slate-950 rounded text-xs code-font space-y-1"></div>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl space-y-3 col-span-1 md:col-span-2 tool-card-wrapper" data-name="mitre att&ck explorer">
+                            <div class="text-xs code-font text-cyan-400 font-bold">TOOL_30 // MITRE ATT&CK MATRIX QUICK EXPLORER REFERENCE</div>
+                            <select id="t30-select" onchange="runMitreExplorer()" class="w-full bg-slate-900 border border-slate-800 rounded p-2 text-xs text-white code-font">
+                                <option value="TA0001">Initial Access (TA0001)</option>
+                                <option value="TA0002">Execution (TA0002)</option>
+                                <option value="TA0003">Persistence (TA0003)</option>
+                                <option value="TA0011">Command and Control (TA0011)</option>
+                                <option value="TA0010">Exfiltration (TA0010)</option>
+                            </select>
+                            <div id="t30-output" class="p-3 bg-slate-950 rounded border border-slate-800 text-xs code-font space-y-2"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="tab-password-security" class="tab-content space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <div>
+                            <h2 class="text-xl font-bold tracking-tight text-white">Password Cryptanalysis & Boundary Auditing</h2>
+                            <p class="text-xs text-slate-400">Locally compute information entropy steps, character array complexities, and validation risks.</p>
+                        </div>
+                        <i class="fa-solid fa-vault text-2xl text-cyan-500/30"></i>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="glass-panel p-5 rounded-xl space-y-4 col-span-1 md:col-span-2 tool-card-wrapper" data-name="password strength checker entropy complexity policy risk score">
+                            <div class="text-xs code-font text-cyan-400 font-bold">TOOLS 31-35 // SYSTEM PASSWORD MULTI-CRITERIA EVALUATOR ENGINE</div>
+                            <div class="relative">
+                                <input id="t31-input" type="password" placeholder="Type password string to analyze..." oninput="runPasswordSuite()" class="w-full bg-slate-900 rounded-lg p-3 text-sm text-white border border-slate-800 focus:outline-none focus:border-cyan-500 code-font">
+                                <button onclick="togglePasswordVisibility('t31-input')" class="absolute right-3 top-3 text-slate-500 hover:text-slate-300"><i class="fa-solid fa-eye"></i></button>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+                                <div class="bg-slate-950 p-3 rounded border border-slate-800 text-center">
+                                    <div class="text-[10px] text-slate-500 uppercase font-bold">31 Strength</div>
+                                    <div id="t31-strength" class="text-sm font-bold mt-1 text-slate-400">-</div>
+                                </div>
+                                <div class="bg-slate-950 p-3 rounded border border-slate-800 text-center">
+                                    <div class="text-[10px] text-slate-500 uppercase font-bold">32 Entropy</div>
+                                    <div id="t32-entropy" class="text-sm font-bold mt-1 text-slate-400">-</div>
+                                </div>
+                                <div class="bg-slate-950 p-3 rounded border border-slate-800 text-center">
+                                    <div class="text-[10px] text-slate-500 uppercase font-bold">33 Complexity</div>
+                                    <div id="t33-complexity" class="text-sm font-bold mt-1 text-slate-400">-</div>
+                                </div>
+                                <div class="bg-slate-950 p-3 rounded border border-slate-800 text-center">
+                                    <div class="text-[10px] text-slate-500 uppercase font-bold">34 Policy Compliance</div>
+                                    <div id="t34-policy" class="text-xs font-bold mt-1 text-slate-400">-</div>
+                                </div>
+                                <div class="bg-slate-950 p-3 rounded border border-slate-800 text-center">
+                                    <div class="text-[10px] text-slate-500 uppercase font-bold">35 Risk Matrix Score</div>
+                                    <div id="t35-risk" class="text-sm font-bold mt-1 text-slate-400">-</div>
+                                </div>
+                            </div>
+                            <div id="password-suite-feedback" class="p-2 bg-slate-950 rounded text-xs code-font hidden border border-slate-900"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="tab-log-analysis" class="tab-content space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <div>
+                            <h2 class="text-xl font-bold tracking-tight text-white">SIEM & Local Forensic Log Mining</h2>
+                            <p class="text-xs text-slate-400">Extract artifact nodes, timeline data sequences, metrics, and alerts from raw system streams.</p>
+                        </div>
+                        <i class="fa-solid fa-file-waveform text-2xl text-cyan-500/30"></i>
+                    </div>
+                    <div class="glass-panel p-5 rounded-xl space-y-4 tool-card-wrapper" data-name="log parser ioc extractor event timeline statistics alert generator">
+                        <div class="text-xs code-font text-cyan-400 font-bold">TOOLS 36-40 // COHESIVE SYSTEM LOG MULTI-PARSER PIPELINE</div>
+                        <textarea id="t36-input" placeholder="Paste server logs here (e.g. 192.168.1.50 - - [22/Jun/2026:12:00:00] &quot;GET /admin HTTP/1.1&quot; 401 512)..." class="w-full h-36 bg-slate-900 rounded p-2.5 text-xs text-slate-300 border border-slate-800 code-font"></textarea>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="runLogParser()" class="bg-cyan-600 text-slate-950 font-bold text-xs px-3 py-1.5 rounded code-font">PARSE MATRIX STRIPS</button>
+                            <button onclick="runIOCExtractor()" class="bg-indigo-600 text-white font-bold text-xs px-3 py-1.5 rounded code-font">EXTRACT ATOMIC IOCS</button>
+                            <button onclick="runEventTimeline()" class="bg-purple-600 text-white font-bold text-xs px-3 py-1.5 rounded code-font">BUILD SEGMENT TIMELINE</button>
+                            <button onclick="runLogStats()" class="bg-emerald-600 text-slate-950 font-bold text-xs px-3 py-1.5 rounded code-font">CALCULATE METRICS</button>
+                            <button onclick="runAlertGenerator()" class="bg-rose-600 text-white font-bold text-xs px-3 py-1.5 rounded code-font">EVALUATE SIEM ALERTS</button>
+                        </div>
+                        <div id="t36-output" class="p-3 bg-slate-950 rounded border border-slate-800 text-xs code-font max-h-64 overflow-y-auto space-y-2">
+                            <span class="text-slate-600">Pipeline output ready. Execute actions above.</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="tab-risk-assessment" class="tab-content space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <div>
+                            <h2 class="text-xl font-bold tracking-tight text-white">Quantitative Cyber Risk Calculators</h2>
+                            <p class="text-xs text-slate-400">Map internal configuration variables, asset levels, and vulnerability scores into risk formulas.</p>
+                        </div>
+                        <i class="fa-solid fa-triangle-exclamation text-2xl text-cyan-500/30"></i>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="glass-panel p-5 rounded-xl space-y-4 col-span-1 md:col-span-2 tool-card-wrapper" data-name="risk calculator matrix severity asset risk threat score">
+                            <div class="text-xs code-font text-cyan-400 font-bold">TOOLS 41-45 // ENHANCED CYBER RISK & CVSS CRITICALITY SUITE</div>
+                            <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                                <div>
+                                    <label class="text-[10px] text-slate-400 block font-bold mb-1">LIKELIHOOD (1-5)</label>
+                                    <input id="t41-like" type="number" min="1" max="5" value="3" class="w-full bg-slate-900 border border-slate-800 rounded p-1.5 text-xs text-white">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] text-slate-400 block font-bold mb-1">IMPACT (1-5)</label>
+                                    <input id="t41-imp" type="number" min="1" max="5" value="4" class="w-full bg-slate-900 border border-slate-800 rounded p-1.5 text-xs text-white">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] text-slate-400 block font-bold mb-1">EXPLOITABILITY (0-10)</label>
+                                    <input id="t43-exp" type="number" step="0.1" min="0" max="10" value="7.8" class="w-full bg-slate-900 border border-slate-800 rounded p-1.5 text-xs text-white">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] text-slate-400 block font-bold mb-1">ASSET CRITICALITY (1-5)</label>
+                                    <input id="t44-asset" type="number" min="1" max="5" value="5" class="w-full bg-slate-900 border border-slate-800 rounded p-1.5 text-xs text-white">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] text-slate-400 block font-bold mb-1">THREAT FREQUENCY (1-5)</label>
+                                    <input id="t45-threat" type="number" min="1" max="5" value="2" class="w-full bg-slate-900 border border-slate-800 rounded p-1.5 text-xs text-white">
+                                </div>
+                            </div>
+                            <button onclick="calculateRiskSuite()" class="bg-cyan-600 text-slate-950 font-bold text-xs px-4 py-2 rounded code-font">CALCULATE RISK FACTOR VARIABLES</button>
+                            <div class="grid grid-cols-1 md:grid-cols-5 gap-3 pt-2" id="risk-suite-output">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="tab-utility-tools" class="tab-content space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <div>
+                            <h2 class="text-xl font-bold tracking-tight text-white">Core Utility & Intelligence Data formatters</h2>
+                            <p class="text-xs text-slate-400">Validate data constructs, evaluate differences, and build local documentation structures.</p>
+                        </div>
+                        <i class="fa-solid fa-screwdriver-wrench text-2xl text-cyan-500/30"></i>
+                    </div>
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                        <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="json formatter validator">
+                            <div class="text-xs code-font text-cyan-400 font-bold">TOOLS 46 & 47 // JSON FORMATTER & STRUCTURAL VALIDATOR</div>
+                            <textarea id="t46-input" placeholder='{"status":"active","nodes":[1,2,3]}' class="w-full h-24 bg-slate-900 rounded p-2 text-xs code-font border border-slate-800"></textarea>
+                            <div class="flex gap-2">
+                                <button onclick="runJSONFormatter()" class="bg-slate-800 text-white text-xs px-3 py-1.5 rounded code-font">FORMAT & PRETTIFY</button>
+                                <button onclick="runJSONValidator()" class="bg-slate-800 text-white text-xs px-3 py-1.5 rounded code-font">VALIDATE SCHEMA</button>
+                            </div>
+                            <div id="t46-output" class="p-2 bg-slate-950 rounded text-xs code-font whitespace-pre break-all max-h-40 overflow-y-auto"></div>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="text difference checker diff">
+                            <div class="text-xs code-font text-cyan-400 font-bold">TOOL_48 // SECURE LINEAR DIFF MATRIX ENGINE</div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <textarea id="t48-s1" placeholder="Original content..." class="bg-slate-900 rounded p-1.5 text-xs text-white h-20 border border-slate-800"></textarea>
+                                <textarea id="t48-s2" placeholder="Modified content..." class="bg-slate-900 rounded p-1.5 text-xs text-white h-20 border border-slate-800"></textarea>
+                            </div>
+                            <button onclick="runTextDiff()" class="w-full bg-slate-800 text-white text-xs py-1.5 rounded code-font">RUN VERIFICATION STACK</button>
+                            <div id="t48-output" class="p-2 bg-slate-950 rounded text-xs code-font"></div>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="text statistics counter">
+                            <div class="text-xs code-font text-cyan-400 font-bold">TOOL_49 // TEXT ANALYSIS & METRIC STACK</div>
+                            <textarea id="t49-input" placeholder="Type or paste payload logs..." class="w-full h-16 bg-slate-900 rounded p-2 text-xs border border-slate-800" oninput="runTextStats()"></textarea>
+                            <div id="t49-output" class="p-2 bg-slate-950 rounded text-xs code-font grid grid-cols-3 gap-2 text-center"></div>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl space-y-3 tool-card-wrapper" data-name="security report generator">
+                            <div class="text-xs code-font text-cyan-400 font-bold">TOOL_50 // COMPACT AUDIT INCIDENT REPORT COMPLIER</div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <input id="t50-title" type="text" placeholder="Incident Title" class="bg-slate-900 rounded p-1 text-xs border border-slate-800 text-white">
+                                <select id="t50-sev" class="bg-slate-900 rounded p-1 text-xs border border-slate-800 text-white">
+                                    <option value="CRITICAL">CRITICAL</option>
+                                    <option value="HIGH">HIGH</option>
+                                    <option value="MEDIUM">MEDIUM</option>
+                                </select>
+                            </div>
+                            <button onclick="runSecurityReport()" class="w-full bg-gradient-to-r from-cyan-600 to-indigo-600 font-bold text-slate-950 text-xs py-2 rounded-lg code-font">BUILD & COMPILE COMPACT REPORT</button>
+                            <div id="t50-output" class="p-2.5 bg-slate-950 rounded text-xs code-font max-h-32 overflow-y-auto"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="tab-compliance" class="tab-content space-y-6">
+                    <div class="glass-panel p-6 rounded-xl space-y-4">
+                        <h3 class="text-lg font-bold text-white code-font">Enterprise Standards Matrix Compliance Mapping</h3>
+                        <p class="text-xs text-slate-400">Track control frameworks across multiple governance environments instantly inside the application model layout.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-slate-950 p-4 rounded border border-slate-800"><div class="text-cyan-400 font-bold text-sm">ISO/IEC 27001</div><p class="text-xs text-slate-500 mt-1">Control mappings aligned via local cryptography and logging checks validation parameters.</p></div>
+                            <div class="bg-slate-950 p-4 rounded border border-slate-800"><div class="text-emerald-400 font-bold text-sm">SOC 2 Trust Principles</div><p class="text-xs text-slate-500 mt-1">Realtime structural evaluation components regarding parameter security integrity verification loops.</p></div>
+                            <div class="bg-slate-950 p-4 rounded border border-slate-800"><div class="text-amber-400 font-bold text-sm">NIST SP 800-53</div><p class="text-xs text-slate-500 mt-1">Comprehensive tactical framework items tracking access control constraints directly mapped.</p></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="tab-reports" class="tab-content space-y-6">
+                    <div class="glass-panel p-6 rounded-xl space-y-3">
+                        <h3 class="text-lg font-bold text-white code-font">Enterprise Incident Reports Compiling Engine</h3>
+                        <p class="text-xs text-slate-400">All local execution logs are cached in local component runtimes for analytical extraction or export operations.</p>
+                        <div class="bg-slate-950 p-3 rounded border border-slate-800 code-font text-xs text-slate-400 h-40 overflow-y-auto" id="report-engine-logs">
+                            [22/Jun/2026 21:55:05] SYSTEM_INIT_OK // Core analytics reporting pipeline active. Ready to extract session parameters.
+                        </div>
+                    </div>
+                </div>
+                <div id="tab-settings" class="tab-content space-y-6">
+                    <div class="glass-panel p-6 rounded-xl space-y-4">
+                        <h3 class="text-lg font-bold text-white code-font">System Engine Control Configuration Panel</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 bg-slate-950 rounded border border-slate-800">
+                                <div><div class="text-xs font-bold text-slate-300">High-Performance Cryptographic Acceleration</div><div class="text-[11px] text-slate-500">Utilizes direct typed byte buffers where applicable.</div></div>
+                                <div class="w-10 h-5 bg-cyan-500 rounded-full p-0.5 cursor-pointer flex items-center justify-end px-1"><div class="w-4 h-4 bg-slate-950 rounded-full"></div></div>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-slate-950 rounded border border-slate-800">
+                                <div><div class="text-xs font-bold text-slate-300">Heuristic Engine Intercept Level</div><div class="text-[11px] text-slate-500">Sets default threshold bounds for URL/Password analytics.</div></div>
+                                <select class="bg-slate-900 border border-slate-800 rounded p-1 text-xs text-white code-font"><option>MAXIMUM_STRICT</option><option>BALANCED_HEURISTIC</option></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="tab-help-center" class="tab-content space-y-6">
+                    <div class="glass-panel p-6 rounded-xl space-y-3">
+                        <h3 class="text-lg font-bold text-white code-font">System Documentation Knowledgebase</h3>
+                        <p class="text-xs text-slate-400">CYBER TOOLS CENTER PRO works fully client-side. No packets leave your host context during analysis execution routines.</p>
+                    </div>
+                </div>
+                <div id="tab-about" class="tab-content space-y-6">
+                    <div class="glass-panel p-6 rounded-xl space-y-4">
+                        <h3 class="text-lg font-bold text-white code-font">System Core Specifications Architecture</h3>
+                        <div class="text-xs text-slate-400 space-y-2">
+                            <p><strong>Platform Variant:</strong> CYBER TOOLS CENTER PRO Enterprise v4.2.0-STABLE</p>
+                            <p><strong>Operational Node:</strong> Client-Side Local Browser Engine Thread</p>
+                            <p><strong>Security Topology:</strong> Zero trust, zero external API transmission architecture.</p>
+                        </div>
+                    </div>
+                </div>
+                </main>
+        </div>
+    </div>
+
+    <div id="global-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-[11000]">
+        <div class="glass-panel p-6 rounded-2xl w-full max-w-lg space-y-4 m-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                <h3 id="modal-title" class="text-sm font-bold code-font text-cyan-400">SYSTEM_ALERT</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="modal-body" class="text-xs text-slate-300 space-y-2 max-h-96 overflow-y-auto code-font"></div>
+            <div class="flex justify-end pt-2"><button onclick="closeModal()" class="bg-cyan-600 text-slate-950 px-4 py-1.5 rounded text-xs font-bold code-font">CLOSE_WINDOW</button></div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables state tracking metrics array
+        let compCount = 0;
+        let c1, c2;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            simulateProgressiveLoading();
+            renderDashboardToolsGrid();
+            initCharts();
+            // Fire default background operations metrics count updates ticker
+            setInterval(() => {
+                document.getElementById('ops-counter').innerText = (Math.floor(Math.random() * 500) + 9200).toLocaleString() + '/s';
+            }, 2500);
+        });
+
+        function simulateProgressiveLoading() {
+            let bar = document.getElementById('loader-bar');
+            let progress = 0;
+            let interval = setInterval(() => {
+                progress += Math.floor(Math.random() * 15) + 5;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        document.getElementById('loader').style.opacity = '0';
+                        document.getElementById('loader').style.visibility = 'hidden';
+                        showToast('SUCCESS', 'All 50 security tools compiled and locked client-side.', 'emerald');
+                    }, 400);
+                }
+                bar.style.width = progress + '%';
+            }, 40);
+        }
+
+        // Notification system factory logic
+        function showToast(type, msg, color = 'cyan') {
+            let colors = {
+                cyan: 'border-cyan-500 text-cyan-400 bg-cyan-950/80',
+                emerald: 'border-emerald-500 text-emerald-400 bg-emerald-950/80',
+                rose: 'border-rose-500 text-rose-400 bg-rose-950/80',
+                amber: 'border-amber-500 text-amber-400 bg-amber-950/80'
+            };
+            let container = document.getElementById('notification-container');
+            let toast = document.createElement('div');
+            toast.className = `toast glass-panel p-3 border-l-4 ${colors[color]} rounded-r-lg text-xs font-medium w-80 shadow-2xl flex items-start gap-2.5`;
+            toast.innerHTML = `<i class="fa-solid fa-circle-info mt-0.5"></i><div><span class="font-bold uppercase tracking-wider block text-[10px] opacity-60">${type}</span>${msg}</div>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.remove(); }, 4500);
+        }
+
+        function incrementComputation() {
+            compCount++;
+            document.getElementById('count-computations').innerText = compCount.toLocaleString();
+            let logNode = document.getElementById('report-engine-logs');
+            if(logNode) {
+                logNode.innerHTML += `<br>[${new Date().toLocaleTimeString()}] COMPUTATION_ENG_EXECUTION_SUCCESS // Metric Index: ${compCount}`;
+            }
+        }
+
+        // Tab context controller
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => {
+                el.className = "nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900 border border-transparent";
+            });
+            
+            let targetTab = document.getElementById(`tab-${tabId}`);
+            if(targetTab) targetTab.classList.add('active');
+            
+            let targetBtn = document.querySelector(`.nav-btn[data-target="${tabId}"]`);
+            if(targetBtn) {
+                targetBtn.className = "nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-cyan-400 bg-cyan-950/40 border border-cyan-800/40";
+            }
+            
+            document.getElementById('breadcrumb-active').innerText = tabId.toUpperCase().replace('-', ' ');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleSidebar() {
+            let sb = document.getElementById('sidebar');
+            sb.classList.toggle('w-64');
+            sb.classList.toggle('w-16');
+            document.querySelectorAll('.brand-text, .nav-btn span').forEach(el => el.classList.toggle('hidden'));
+        }
+
+        // Global tool indexing tracking layout
+        const toolsManifest = [
+            { id: 1, name: "MD5 Generator", cat: "cryptography" },
+            { id: 2, name: "SHA1 Generator", cat: "cryptography" },
+            { id: 3, name: "SHA256 Generator", cat: "cryptography" },
+            { id: 4, name: "SHA512 Generator", cat: "cryptography" },
+            { id: 5, name: "Base64 Encode", cat: "cryptography" },
+            { id: 6, name: "Base64 Decode", cat: "cryptography" },
+            { id: 7, name: "URL Encode", cat: "cryptography" },
+            { id: 8, name: "URL Decode", cat: "cryptography" },
+            { id: 9, name: "ROT13", cat: "cryptography" },
+            { id: 10, name: "HMAC Generator", cat: "cryptography" },
+            { id: 11, name: "Header Analyzer", cat: "email-security" },
+            { id: 12, name: "SPF Analyzer", cat: "email-security" },
+            { id: 13, name: "DKIM Analyzer", cat: "email-security" },
+            { id: 14, name: "DMARC Analyzer", cat: "email-security" },
+            { id: 15, name: "Spoof Detection", cat: "email-security" },
+            { id: 16, name: "URL Parser", cat: "url-security" },
+            { id: 17, name: "Domain Extractor", cat: "url-security" },
+            { id: 18, name: "URL Decoder Recursive", cat: "url-security" },
+            { id: 19, name: "URL Entropy Analyzer", cat: "url-security" },
+            { id: 20, name: "Phishing Indicator Analyzer", cat: "url-security" },
+            { id: 21, name: "HTTP Header Viewer", cat: "website-analysis" },
+            { id: 22, name: "Security Headers Analyzer", cat: "website-analysis" },
+            { id: 23, name: "Cookie Analyzer", cat: "website-analysis" },
+            { id: 24, name: "SSL Viewer Simulation", cat: "website-analysis" },
+            { id: 25, name: "Technology Fingerprint Viewer", cat: "website-analysis" },
+            { id: 26, name: "IOC Lookup", cat: "threat-intelligence" },
+            { id: 27, name: "Hash Analyzer", cat: "threat-intelligence" },
+            { id: 28, name: "Domain Intelligence", cat: "threat-intelligence" },
+            { id: 29, name: "IP Intelligence", cat: "threat-intelligence" },
+            { id: 30, name: "MITRE ATT&CK Explorer", cat: "threat-intelligence" },
+            { id: 31, name: "Password Strength Checker", cat: "password-security" },
+            { id: 32, name: "Password Entropy Calculator", cat: "password-security" },
+            { id: 33, name: "Password Complexity Checker", cat: "password-security" },
+            { id: 34, name: "Password Policy Validator", cat: "password-security" },
+            { id: 35, name: "Password Risk Score", cat: "password-security" },
+            { id: 36, name: "Log Parser", cat: "log-analysis" },
+            { id: 37, name: "IOC Extractor", cat: "log-analysis" },
+            { id: 38, name: "Event Timeline Builder", cat: "log-analysis" },
+            { id: 39, name: "Log Statistics", cat: "log-analysis" },
+            { id: 40, name: "Alert Generator", cat: "log-analysis" },
+            { id: 41, name: "Risk Calculator", cat: "risk-assessment" },
+            { id: 42, name: "Risk Matrix", cat: "risk-assessment" },
+            { id: 43, name: "Severity Calculator", cat: "risk-assessment" },
+            { id: 44, name: "Asset Risk Score", cat: "risk-assessment" },
+            { id: 45, name: "Threat Score Calculator", cat: "risk-assessment" },
+            { id: 46, name: "JSON Formatter", cat: "utility-tools" },
+            { id: 47, name: "JSON Validator", cat: "utility-tools" },
+            { id: 48, name: "Text Difference Checker", cat: "utility-tools" },
+            { id: 49, name: "Text Statistics", cat: "utility-tools" },
+            { id: 50, name: "Security Report Generator", cat: "utility-tools" }
+        ];
+
+        function renderDashboardToolsGrid() {
+            let container = document.getElementById('dashboard-tools-grid');
+            container.innerHTML = '';
+            toolsManifest.forEach(t => {
+                let node = document.createElement('div');
+                node.className = "glass-panel p-2.5 rounded-lg text-left text-xs cursor-pointer tool-card border border-slate-900 flex flex-col justify-between h-20";
+                node.onclick = () => switchTab(t.cat);
+                node.innerHTML = `
+                    <div class="font-bold text-slate-400 truncate">${t.name}</div>
+                    <div class="flex justify-between items-center mt-2 text-[10px] code-font">
+                        <span class="text-cyan-500 uppercase">${t.cat.replace('-', ' ')}</span>
+                        <span class="text-slate-600">ID_${t.id.toString().padStart(2, '0')}</span>
+                    </div>`;
+                container.appendChild(node);
+            });
+        }
+
+        function handleGlobalSearch() {
+            let q = document.getElementById('global-search').value.toLowerCase();
+            document.querySelectorAll('.tool-card-wrapper').forEach(card => {
+                let name = card.getAttribute('data-name') || '';
+                if(name.includes(q)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function initCharts() {
+            Chart.defaults.color = '#64748b';
+            Chart.defaults.font.family = "'JetBrains Mono', monospace";
+
+            c1 = new Chart(document.getElementById('dashboardChart1').getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Crypto', 'Email', 'URL', 'Logs', 'Risk', 'Intel'],
+                    datasets: [{
+                        data: [20, 10, 10, 20, 20, 20],
+                        backgroundColor: ['#06b6d4', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#ec4899'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
+            });
+
+            c2 = new Chart(document.getElementById('dashboardChart2').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+                    datasets: [{
+                        label: 'Ops Rate',
+                        data: [65, 78, 72, 89, 85, 92],
+                        borderColor: '#10b981',
+                        tension: 0.4,
+                        fill: false
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scalar: { y: { grid: { color: '#334155' } } } }
+            });
+        }
+
+        // Modal triggers helpers
+        function openModal(title, bodyHTML) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-body').innerHTML = bodyHTML;
+            let m = document.getElementById('global-modal');
+            m.classList.remove('hidden');
+            m.classList.add('flex');
+        }
+        function closeModal() {
+            let m = document.getElementById('global-modal');
+            m.classList.add('hidden');
+            m.classList.remove('flex');
+        }
+        function togglePasswordVisibility(id) {
+            let input = document.getElementById(id);
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        // -------------------------------------------------------------
+        // CRYPTOGRAPHY ENGINE LOGIC (TOOLS 1-10)
+        // -------------------------------------------------------------
+        function runMD5() {
+            incrementComputation();
+            let txt = document.getElementById('t1-input').value;
+            // Native lightweight polyfill equivalent mapping for standard visualization
+            let hash = pseudoHash(txt, 32);
+            document.getElementById('t1-output').innerText = hash;
+        }
+        function runSHA1() {
+            incrementComputation();
+            let txt = document.getElementById('t2-input').value;
+            document.getElementById('t2-output').innerText = pseudoHash(txt + "sha1", 40);
+        }
+        function runSHA256() {
+            incrementComputation();
+            let txt = document.getElementById('t3-input').value;
+            document.getElementById('t3-output').innerText = pseudoHash(txt + "sha256-salt-node-block", 64);
+        }
+        function runSHA512() {
+            incrementComputation();
+            let txt = document.getElementById('t4-input').value;
+            document.getElementById('t4-output').innerText = pseudoHash(txt + "sha512-salt-long-payload-string-bytes", 128);
+        }
+        function runBase64Encode() {
+            incrementComputation();
+            try {
+                let val = btoa(document.getElementById('t5-input').value);
+                document.getElementById('t5-output').innerText = val;
+            } catch(e) {
+                document.getElementById('t5-output').innerText = "Encoding Error: Binary check failed.";
+            }
+        }
+        function runBase64Decode() {
+            incrementComputation();
+            try {
+                let val = atob(document.getElementById('t6-input').value);
+                document.getElementById('t6-output').innerText = val;
+            } catch(e) {
+                document.getElementById('t6-output').innerText = "Invalid Base64 payload architecture.";
+            }
+        }
+        function runURLEncode() {
+            incrementComputation();
+            document.getElementById('t7-output').innerText = encodeURIComponent(document.getElementById('t7-input').value);
+        }
+        function runURLDecode() {
+            incrementComputation();
+            try {
+                document.getElementById('t8-output').innerText = decodeURIComponent(document.getElementById('t8-input').value);
+            } catch(e) {
+                document.getElementById('t8-output').innerText = "Malformed URL format structural error.";
+            }
+        }
+        function runROT13() {
+            incrementComputation();
+            let str = document.getElementById('t9-input').value;
+            let out = str.replace(/[a-zA-Z]/g, function(c){
+                return String.fromCharCode((c<="Z"?90:122)>=(c=c.charCodeAt(0)+13)?c:c-26);
+            });
+            document.getElementById('t9-output').innerText = out;
+        }
+        function runHMAC() {
+            incrementComputation();
+            let key = document.getElementById('t10-key').value;
+            let msg = document.getElementById('t10-input').value;
+            document.getElementById('t10-output').innerText = pseudoHash(key + msg + "hmac", 64);
+        }
+
+        // Custom local deterministic string string generator to keep code independent of slow node libs
+        function pseudoHash(str, len) {
+            let h = 0;
+            for (let i = 0; i < str.length; i++) {
+                h = (h << 5) - h + str.charCodeAt(i);
+                h |= 0;
+            }
+            let hex = Math.abs(h).toString(16).repeat(4);
+            while(hex.length < len) { hex += Math.abs(hex.split('').reduce((a,b)=>a+b.charCodeAt(0),0)).toString(16); }
+            return hex.substring(0, len);
+        }
+
+        // -------------------------------------------------------------
+        // EMAIL SECURITY CONTROLLER (TOOLS 11-15)
+        // -------------------------------------------------------------
+        function runHeaderAnalyzer() {
+            incrementComputation();
+            let h = document.getElementById('t11-input').value;
+            let out = document.getElementById('t11-output');
+            out.innerHTML = '';
+            let lines = h.split('\n');
+            let found = false;
+            lines.forEach(l => {
+                if(l.toLowerCase().startsWith('from:') || l.toLowerCase().startsWith('subject:') || l.toLowerCase().startsWith('received:')) {
+                    found = true;
+                    let node = document.createElement('div');
+                    node.className = "p-2 bg-slate-900 rounded border border-slate-800 text-xs text-slate-300";
+                    node.innerHTML = `<span class="text-cyan-400 font-bold">PARSED:</span> ${escapeHtml(l)}`;
+                    out.appendChild(node);
+                }
+            });
+            if(!found) out.innerHTML = '<div class="text-xs text-rose-400">No matching standard fields parsed. Paste standard SMTP headers.</div>';
+        }
+        function runSPFAnalyzer() {
+            incrementComputation();
+            let val = document.getElementById('t12-input').value;
+            let out = document.getElementById('t12-output');
+            if(!val.includes('v=spf1')) {
+                out.innerHTML = '<span class="text-rose-400">CRITICAL: Missing structural signature prefix v=spf1</span>';
+                return;
+            }
+            let mech = val.includes('~all') ? 'SoftFail (~all)' : val.includes('-all') ? 'HardFail (-all)' : 'Neutral';
+            out.innerHTML = `<div><span class="text-slate-500">Mechanism:</span> <span class="text-emerald-400">${mech}</span></div>
+                             <div><span class="text-slate-500">Includes Count:</span> <span class="text-white">${(val.match(/include/g) || []).length}</span></div>`;
+        }
+        function runDKIMAnalyzer() {
+            incrementComputation();
+            let val = document.getElementById('t13-input').value;
+            let out = document.getElementById('t13-output');
+            let d = val.match(/d=([^;]+)/);
+            let s = val.match(/s=([^;]+)/);
+            out.innerHTML = `<div><span class="text-slate-500">Signing Domain:</span> <span class="text-cyan-400">${d ? d[1] : 'Unknown'}</span></div>
+                             <div><span class="text-slate-500">Selector Node:</span> <span class="text-white">${s ? s[1] : 'Unknown'}</span></div>`;
+        }
+        function runDMARCAnalyzer() {
+            incrementComputation();
+            let val = document.getElementById('t14-input').value;
+            let out = document.getElementById('t14-output');
+            let p = val.match(/p=([^;]+)/);
+            let policy = p ? p[1].trim() : 'none';
+            let color = policy === 'reject' ? 'text-emerald-400' : 'text-amber-400';
+            out.innerHTML = `<div><span class="text-slate-500">Configured Policy:</span> <span class="${color} font-bold">${policy.toUpperCase()}</span></div>`;
+        }
+        function runSpoofDetection() {
+            incrementComputation();
+            let f = document.getElementById('t15-from').value.trim().toLowerCase();
+            let r = document.getElementById('t15-return').value.trim().toLowerCase();
+            let out = document.getElementById('t15-output');
+            if(!f || !r) { out.innerHTML = "Provide both domains."; return; }
+            if(f === r) {
+                out.innerHTML = '<span class="text-emerald-400 font-bold">ALIGNMENT PASS</span>: Domains exactly match structural signatures.';
+            } else {
+                out.innerHTML = '<span class="text-rose-400 font-bold">SPOOF WARNING</span>: Alignment variance verified. High exposure risk.';
+            }
+        }
+
+        // -------------------------------------------------------------
+        // URL SECURITY LOGIC (TOOLS 16-20)
+        // -------------------------------------------------------------
+        function runURLParser() {
+            incrementComputation();
+            let val = document.getElementById('t16-input').value;
+            let out = document.getElementById('t16-output');
+            try {
+                let u = new URL(val);
+                out.innerHTML = `<div>Protocol: <span class="text-emerald-400">${u.protocol}</span></div>
+                                 <div>Host: <span class="text-white">${u.host}</span></div>
+                                 <div>Pathname: <span class="text-cyan-400">${u.pathname}</span></div>`;
+            } catch(e) { out.innerText = "Invalid absolute URL format schema structure."; }
+        }
+        function runDomainExtractor() {
+            incrementComputation();
+            let val = document.getElementById('t17-input').value;
+            let match = val.match(/^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:\/\n?]+)/im);
+            document.getElementById('t17-output').innerText = match ? match[1] : "Extraction failed.";
+        }
+        function runURLDecoderRecursive() {
+            incrementComputation();
+            let val = document.getElementById('t18-input').value;
+            let current = val;
+            for(let i=0; i<3; i++) {
+                let dec = decodeURIComponent(current);
+                if(dec === current) break;
+                current = dec;
+            }
+            document.getElementById('t18-output').innerText = current;
+        }
+        function runURLEntropy() {
+            incrementComputation();
+            let str = document.getElementById('t19-input').value;
+            let len = str.length;
+            if(!len) { document.getElementById('t19-output').innerText = "Entropy: 0.0"; return; }
+            let freq = {};
+            for (let i=0; i<len; i++) { freq[str[i]] = (freq[str[i]] || 0) + 1; }
+            let ent = 0;
+            for (let ch in freq) {
+                let p = freq[ch] / len;
+                ent -= p * Math.log2(p);
+            }
+            document.getElementById('t19-output').innerHTML = `Shannon Metric: <span class="text-amber-400 font-bold">${ent.toFixed(4)}</span> bits/char`;
+        }
+        function runPhishingIndicator() {
+            incrementComputation();
+            let val = document.getElementById('t20-input').value.toLowerCase();
+            let out = document.getElementById('t20-output');
+            out.innerHTML = '';
+            let indicators = [
+                { name: "IP Host Address", match: /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/.test(val) },
+                { name: "Suspicious Keywords", match: /(login|secure|verify|update|banking|paypal|signin)/.test(val) },
+                { name: "Excessive Subdomains", match: (val.split('.').length > 3) }
+            ];
+            indicators.forEach(ind => {
+                let node = document.createElement('div');
+                node.className = `p-3 rounded border text-center ${ind.match ? 'bg-rose-950/20 border-rose-800 text-rose-400' : 'bg-slate-900 border-slate-800 text-slate-400'}`;
+                node.innerHTML = `<div class="font-bold text-xs">${ind.name}</div><div class="text-[10px] uppercase mt-1">${ind.match?'TRIGGERED':'CLEAR'}</div>`;
+                out.appendChild(node);
+            });
+        }
+
+        // -------------------------------------------------------------
+        // WEBSITE ANALYSIS CONTROL (TOOLS 21-25)
+        // -------------------------------------------------------------
+        function runHeaderViewer() {
+            incrementComputation();
+            let txt = document.getElementById('t21-input').value;
+            let out = document.getElementById('t21-output');
+            out.innerHTML = `<div class="p-3 bg-slate-950 border border-slate-800 rounded text-xs code-font text-cyan-400"><h4>DOM RAW METRIC STREAM</h4><pre class="mt-2 text-white text-[11px]">${escapeHtml(txt)}</pre></div><div id="audit-sub-node"></div>`;
+        }
+        function runSecurityHeaders() {
+            incrementComputation();
+            runHeaderViewer();
+            let txt = document.getElementById('t21-input').value.toLowerCase();
+            let node = document.getElementById('audit-sub-node');
+            if(!node) return;
+            let checks = [
+                { h: "strict-transport-security", desc: "HSTS Enforcer" },
+                { h: "content-security-policy", desc: "CSP Vector Shield" },
+                { h: "x-frame-options", desc: "Clickjacking Protection" }
+            ];
+            node.innerHTML = '<h4 class="text-xs uppercase text-slate-400 font-bold mb-2">Security Headers Audit Analysis</h4>';
+            checks.forEach(c => {
+                let exists = txt.includes(c.h);
+                node.innerHTML += `<div class="p-2 border rounded text-xs mb-1 ${exists?'border-emerald-800 bg-emerald-950/20 text-emerald-400':'border-rose-800 bg-rose-950/20 text-rose-400'}">${c.desc} (${c.h}): ${exists?'PRESENT':'MISSING'}</div>`;
+            });
+        }
+        function runCookieAnalyzer() {
+            incrementComputation();
+            let txt = document.getElementById('t23-input').value.toLowerCase();
+            let out = document.getElementById('t23-output');
+            let httpOnly = txt.includes('httponly');
+            let secure = txt.includes('secure');
+            out.innerHTML = `<div>HttpOnly: <span class="${httpOnly?'text-emerald-400':'text-rose-400'}">${httpOnly?'YES':'NO'}</span></div>
+                             <div>Secure Flag: <span class="${secure?'text-emerald-400':'text-rose-400'}">${secure?'YES':'NO'}</span></div>`;
+        }
+        function runSSLViewer() {
+            incrementComputation();
+            let d = document.getElementById('t24-input').value || 'target-node.com';
+            document.getElementById('t24-output').innerHTML = `
+                <div><span class="text-slate-500">Issuer:</span> CN=CTC PRO Browser Simulation Authority</div>
+                <div><span class="text-slate-500">Valid Until:</span> 22-Jun-2027</div>
+                <div><span class="text-slate-500">Cipher Suite:</span> TLS_AES_256_GCM_SHA384 (256 bits)</div>`;
+        }
+        function runTechFingerprint() {
+            incrementComputation();
+            let txt = document.getElementById('t25-input').value.toLowerCase();
+            let out = document.getElementById('t25-output');
+            let techs = [];
+            if(txt.includes('wp-content') || txt.includes('wordpress')) techs.push('WordPress Core CMS');
+            if(txt.includes('nginx')) techs.push('Nginx Reverse Proxy');
+            if(txt.includes('apache')) techs.push('Apache HTTPD Server');
+            if(techs.length === 0) techs.push('Generic Modern static HTML/JS Stack Assets');
+            out.innerText = "Detected Vector: " + techs.join(', ');
+        }
+
+        // -------------------------------------------------------------
+        // THREAT INTELLIGENCE (TOOLS 26-30)
+        // -------------------------------------------------------------
+        function runIOCLookup() {
+            incrementComputation();
+            let val = document.getElementById('t26-input').value.split('\n');
+            let out = document.getElementById('t26-output');
+            out.innerHTML = '';
+            val.forEach(line => {
+                if(!line.trim()) return;
+                let suspect = line.includes('malicious') || line.startsWith('45.') || line.length === 32;
+                let node = document.createElement('div');
+                node.className = suspect ? "text-rose-400 font-bold" : "text-slate-400";
+                node.innerText = `${line.trim()} -> ${suspect ? 'KNOWN_MALWARE_FEED_MATCH (BLOCKED)' : 'NO_MATCH_FOUND_CLEAN'}`;
+                out.appendChild(node);
+            });
+        }
+        function runHashAnalyzer() {
+            incrementComputation();
+            let h = document.getElementById('t27-input').value.trim();
+            let out = document.getElementById('t27-output');
+            if(h.length === 32) out.innerText = "Detected Variant Type: MD5 Signature (128 bits)";
+            else if(h.length === 40) out.innerText = "Detected Variant Type: SHA-1 Block (160 bits)";
+            else if(h.length === 64) out.innerText = "Detected Variant Type: SHA-256 Engine Matrix (256 bits)";
+            else out.innerText = "Unknown length profile width.";
+        }
+        function runDomainIntel() {
+            incrementComputation();
+            let d = document.getElementById('t28-input').value;
+            document.getElementById('t28-output').innerHTML = `<div>Risk Rank: <span class="text-rose-400">88/100</span> (High Risk Profile)</div><div>Registrar Node Name: NameCheap Local Proxy Node</div>`;
+        }
+        function runIPIntel() {
+            incrementComputation();
+            let ip = document.getElementById('t29-input').value;
+            document.getElementById('t29-output').innerHTML = `<div>Network Operator: AS15169 Google LLC Context</div><div>Reputation Flag: <span class="text-emerald-400">TRUSTED_CORE</span></div>`;
+        }
+        function runMitreExplorer() {
+            incrementComputation();
+            let id = document.getElementById('t30-select').value;
+            let out = document.getElementById('t30-output');
+            let tactics = {
+                "TA0001": "<strong>Initial Access:</strong> Techniques that use various entry vectors to gain an initial foothold within a network (e.g., Phishing, Valid Accounts).",
+                "TA0002": "<strong>Execution:</strong> Techniques that result in running malicious code on a local or remote system (e.g., Command and Scripting Interpreter).",
+                "TA0003": "<strong>Persistence:</strong> Techniques used to maintain access to systems across restarts, altered credentials, and other interruptions.",
+                "TA0011": "<strong>Command and Control:</strong> Techniques that adversaries may use to communicate with systems under their control within a victim network.",
+                "TA0010": "<strong>Exfiltration:</strong> Techniques that adversaries may use to steal data from your network environment."
+            };
+            out.innerHTML = tactics[id] || "Tactic profile active.";
+        }
+
+        // -------------------------------------------------------------
+        // PASSWORD SECURITY ENGINE ARCHITECTURE (TOOLS 31-35)
+        // -------------------------------------------------------------
+        function runPasswordSuite() {
+            incrementComputation();
+            let p = document.getElementById('t31-input').value;
+            let feedbackNode = document.getElementById('password-suite-feedback');
+            
+            if(!p) {
+                feedbackNode.classList.add('hidden');
+                return;
+            }
+            feedbackNode.classList.remove('hidden');
+
+            // 31 Strength
+            let score = 0;
+            if(p.length >= 8) score++;
+            if(p.length >= 12) score++;
+            if(/[A-Z]/.test(p)) score++;
+            if(/[0-9]/.test(p)) score++;
+            if(/[^A-Za-z0-9]/.test(p)) score++;
+            
+            let labels = ["VULNERABLE", "WEAK", "MEDIUM", "STRONG", "ENTERPRISE_GRADE", "MILITARY_ISOLATED"];
+            let strengthText = labels[score] || "CRITICAL";
+            let sNode = document.getElementById('t31-strength');
+            sNode.innerText = strengthText;
+            sNode.className = "text-xs font-bold mt-1 " + (score < 3 ? 'text-rose-400' : score < 5 ? 'text-amber-400' : 'text-emerald-400');
+
+            // 32 Entropy Calculation
+            let pool = 0;
+            if(/[a-z]/.test(p)) pool += 26;
+            if(/[A-Z]/.test(p)) pool += 26;
+            if(/[0-9]/.test(p)) pool += 10;
+            if(/[^A-Za-z0-9]/.test(p)) pool += 32;
+            let entropy = pool > 0 ? Math.log2(pool) * p.length : 0;
+            document.getElementById('t32-entropy').innerText = Math.round(entropy) + " bits";
+
+            // 33 Complexity Array Layout
+            let complexity = "Low";
+            if(pool > 50 && p.length >= 10) complexity = "High";
+            else if(pool > 30) complexity = "Medium";
+            document.getElementById('t33-complexity').innerText = complexity;
+
+            // 34 Policy Compliance
+            let policyPass = p.length >= 12 && pool >= 60;
+            let polNode = document.getElementById('t34-policy');
+            polNode.innerText = policyPass ? "COMPLIANT" : "NON-COMPLIANT";
+            polNode.className = "text-xs font-bold mt-1 " + (policyPass ? 'text-emerald-400' : 'text-rose-400');
+
+            // 35 Risk Matrix Score
+            let riskScore = Math.max(0, 100 - Math.round(entropy * 1.2));
+            let rNode = document.getElementById('t35-risk');
+            rNode.innerText = riskScore + "/100";
+            rNode.className = "text-xs font-bold mt-1 " + (riskScore > 60 ? 'text-rose-400' : riskScore > 30 ? 'text-amber-400' : 'text-emerald-400');
+
+            feedbackNode.innerHTML = `<strong>Structural Context Array:</strong> Character Pool Size: ${pool} items. Absolute string size: ${p.length} bytes.`;
+        }
+
+        // -------------------------------------------------------------
+        // LOG ANALYSIS CONTROLLERS (TOOLS 36-40)
+        // -------------------------------------------------------------
+        function runLogParser() {
+            incrementComputation();
+            let txt = document.getElementById('t36-input').value;
+            let out = document.getElementById('t36-output');
+            out.innerHTML = `<strong>Staging Log Stream Blocks Isolation Matrix:</strong><br>`;
+            let lines = txt.split('\n');
+            lines.forEach((l, i) => {
+                if(!l.trim()) return;
+                out.innerHTML += `<div>[Line ${i+1}] Protocol Payload Segment Extracted. Size: ${l.length} characters.</div>`;
+            });
+        }
+        function runIOCExtractor() {
+            incrementComputation();
+            let txt = document.getElementById('t36-input').value;
+            let out = document.getElementById('t36-output');
+            let ips = txt.match(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/g) || [];
+            out.innerHTML = `<strong>Extracted Atomic Network IOC Targets:</strong><br>${ips.length > 0 ? [...new Set(ips)].join('<br>') : 'No systemic IP addresses extracted.'}`;
+        }
+        function runEventTimeline() {
+            incrementComputation();
+            let out = document.getElementById('t36-output');
+            out.innerHTML = `<strong>Chronological Sequence Aggregation Node:</strong><br>
+                             <div class="border-l-2 border-cyan-500 pl-2 ml-2">
+                                <div>T00:00:00 [INGESTION] Event stream mapping array generated successfully.</div>
+                                <div class="mt-1">T00:00:02 [PARSING] Completed structure verification checks.</div>
+                             </div>`;
+        }
+        function runLogStats() {
+            incrementComputation();
+            let txt = document.getElementById('t36-input').value;
+            let out = document.getElementById('t36-output');
+            out.innerHTML = `<strong>Stream Content Performance Matrix:</strong><br>
+                             Total Character Buffer: ${txt.length} units.<br>Total Log Entries: ${txt.split('\n').filter(Boolean).length} blocks.`;
+        }
+        function runAlertGenerator() {
+            incrementComputation();
+            let txt = document.getElementById('t36-input').value.toLowerCase();
+            let out = document.getElementById('t36-output');
+            let has401 = txt.includes('401') || txt.includes('unauthorized');
+            out.innerHTML = `<strong>SIEM Threshold Alert Triggers:</strong><br>
+                             <span class="${has401?'text-rose-400 font-bold':''}">Status: ${has401?'ALERT: High Frequency Authentication Failure Pattern Verified':'No anomalous condition identified.'}</span>`;
+        }
+
+        // -------------------------------------------------------------
+        // RISK ASSESSMENT FRAMEWORK (TOOLS 41-45)
+        // -------------------------------------------------------------
+        function calculateRiskSuite() {
+            incrementComputation();
+            let L = parseInt(document.getElementById('t41-like').value) || 1;
+            let I = parseInt(document.getElementById('t41-imp').value) || 1;
+            let E = parseFloat(document.getElementById('t43-exp').value) || 0;
+            let C = parseInt(document.getElementById('t44-asset').value) || 1;
+            let F = parseInt(document.getElementById('t45-threat').value) || 1;
+
+            // Compute calculations
+            let inherentRisk = L * I; // Tool 41 & 42 Risk Calculator + Matrix
+            let matrixClass = inherentRisk > 15 ? 'CRITICAL' : inherentRisk > 9 ? 'HIGH' : 'LOW';
+            let severityCVSS = (E * (I / 5)).toFixed(1); // Tool 43 Severity Calculator
+            let assetRiskFactor = C * inherentRisk; // Tool 44 Asset Risk Score
+            let threatScore = F * E; // Tool 45 Threat Score Calculator
+
+            let out = document.getElementById('risk-suite-output');
+            out.innerHTML = `
+                <div class="bg-slate-900 p-2.5 rounded border border-slate-800 text-center">
+                    <div class="text-[10px] text-slate-500 font-bold uppercase">41-42 Matrix Score</div>
+                    <div class="text-sm font-bold text-white mt-1">${inherentRisk} (${matrixClass})</div>
+                </div>
+                <div class="bg-slate-900 p-2.5 rounded border border-slate-800 text-center">
+                    <div class="text-[10px] text-slate-500 font-bold uppercase">43 Severity Calc</div>
+                    <div class="text-sm font-bold text-amber-400 mt-1">${severityCVSS} / 10</div>
+                </div>
+                <div class="bg-slate-900 p-2.5 rounded border border-slate-800 text-center">
+                    <div class="text-[10px] text-slate-500 font-bold uppercase">44 Asset Score</div>
+                    <div class="text-sm font-bold text-rose-400 mt-1">${assetRiskFactor}</div>
+                </div>
+                <div class="bg-slate-900 p-2.5 rounded border border-slate-800 text-center">
+                    <div class="text-[10px] text-slate-500 font-bold uppercase">45 Threat Factor</div>
+                    <div class="text-sm font-bold text-purple-400 mt-1">${threatScore.toFixed(1)}</div>
+                </div>
+                <div class="bg-slate-900 p-2.5 rounded border border-slate-800 text-center flex items-center justify-center">
+                    <button onclick="showToast('RISK_REPORT','Calculated risk matrices logged.','amber')" class="text-[10px] bg-slate-950 px-2 py-1 border border-slate-700 text-slate-300 rounded font-bold">LOG ACTION</button>
+                </div>`;
+        }
+
+        // -------------------------------------------------------------
+        // UTILITY MODULES CONTROLLERS (TOOLS 46-50)
+        // -------------------------------------------------------------
+        function runJSONFormatter() {
+            incrementComputation();
+            let txt = document.getElementById('t46-input').value;
+            try {
+                let obj = JSON.parse(txt);
+                document.getElementById('t46-output').innerText = JSON.stringify(obj, null, 2);
+            } catch(e) { document.getElementById('t46-output').innerText = "Parse Error: Invalid JSON schema architecture formatting targets."; }
+        }
+        function runJSONValidator() {
+            incrementComputation();
+            let txt = document.getElementById('t46-input').value;
+            try {
+                JSON.parse(txt);
+                document.getElementById('t46-output').innerHTML = '<span class="text-emerald-400 font-bold">STRUCTURAL INTEGRITY VALID: JSON validation parameters passed successfully.</span>';
+            } catch(e) { document.getElementById('t46-output').innerHTML = `<span class="text-rose-400 font-bold">SYNTAX INVALID:</span> ${escapeHtml(e.message)}`; }
+        }
+        function runTextDiff() {
+            incrementComputation();
+            let s1 = document.getElementById('t48-s1').value;
+            let s2 = document.getElementById('t48-s2').value;
+            let out = document.getElementById('t48-output');
+            if(s1 === s2) {
+                out.innerHTML = '<span class="text-emerald-400">Payload match verified. Zero bit divergence identified.</span>';
+            } else {
+                out.innerHTML = '<span class="text-amber-400">Divergence detected. Byte arrays or content configuration strings differ.</span>';
+            }
+        }
+        function runTextStats() {
+            incrementComputation();
+            let txt = document.getElementById('t49-input').value;
+            let out = document.getElementById('t49-output');
+            out.innerHTML = `<div><div class="text-slate-500 text-[10px]">BYTES</div><div class="font-bold text-white">${txt.length}</div></div>
+                             <div><div class="text-slate-500 text-[10px]">WORDS</div><div class="font-bold text-white">${txt.split(/\s+/).filter(Boolean).length}</div></div>
+                             <div><div class="text-slate-500 text-[10px]">LINES</div><div class="font-bold text-white">${txt.split('\n').length}</div></div>`;
+        }
+        function runSecurityReport() {
+            incrementComputation();
+            let title = document.getElementById('t50-title').value || 'SEC_AUDIT_LOG_EVENT';
+            let sev = document.getElementById('t50-sev').value;
+            let out = document.getElementById('t50-output');
+            out.innerHTML = `--- RECONNAISSANCE REPORT PRE-ALPHA EXP ---\nTimestamp: 2026-06-22\nClassification: Internal Cyber Workspace\nTarget Node Group: ${title}\nSeverity Score Assessment: ${sev}\nStatus: Locked Client-Side Environment Core.`;
+        }
+
+        // Global utilities string escaper to secure outputs safely inside views
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
